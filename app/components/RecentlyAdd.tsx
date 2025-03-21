@@ -1,9 +1,26 @@
-// RecentlyAdd.jsx
+// RecentlyAdd.tsx
 import Image from "next/image";
 import { prisma } from "../utlis/db";
 import MovieCard from "./MovieCard";
 
-async function getData() {
+// Define the Movie type based on the actual Prisma return type
+type Movie = {
+  id: number; // Changed from string to number
+  title: string;
+  overview: string;
+  WatchLists: {
+    id: string;
+    userId: string;
+    movieId: number | null;
+  }[];
+  imageString: string;
+  youtubeString: string;
+  age: number;
+  release: number;
+  duration: number;
+};
+
+async function getData(): Promise<Movie[]> {
   const data = await prisma.movie.findMany({
     select: {
       id: true,
@@ -29,7 +46,7 @@ const RecentlyAdd = async () => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-8">
-      {data.map((movie) => (
+      {data.map((movie: Movie) => (
         <div
           key={movie.id}
           className="relative h-60 overflow-hidden rounded-lg"
@@ -55,7 +72,7 @@ const RecentlyAdd = async () => {
               />
 
               <MovieCard
-                movieId={movie.id}
+                movieId={movie.id} // Now properly typed as number
                 overview={movie.overview}
                 title={movie.title}
                 watchListId={movie.WatchLists[0]?.id}
